@@ -1,0 +1,19 @@
+{
+    "extends": "./tsconfig.json",
+    "include": [
+        "./src",
+        "./data/setting",
+        "./data/demo",
+        "./data/options",
+        "./scripts",
+        "./typings",
+        "**.ts",
+        "**.js"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*",
+        "back",
+        "static"
+    ]
+}
