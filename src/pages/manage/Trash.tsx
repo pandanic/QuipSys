@@ -1,5 +1,9 @@
 import { FC, useState } from 'react';
-import { Button, Empty, Modal, Space, Table, Typography } from 'antd';
+import { Button, Empty, Modal, Space, Spin, Table, Typography } from 'antd';
+
+import { useLoadingQuestionListData } from '../../hooks/useLoadingQuestionListData';
+
+import { ListPage } from '../../components/ListPage';
 
 import styles from './common.module.scss';
 
@@ -26,35 +30,8 @@ const columns = [
 ];
 
 export const Trash: FC = () => {
-    const [questionList] = useState([
-        {
-            id: 1,
-            title: '问题1',
-            isPublish: true,
-            isStart: true,
-            anwserCount: 1,
-            createTime: '2022-01-01',
-            isStar: true,
-        },
-        {
-            id: 2,
-            title: '问题2',
-            isPublish: true,
-            isStart: true,
-            anwserCount: 1,
-            createTime: '2022-01-01',
-            isStar: false,
-        },
-        {
-            id: 3,
-            title: '问题3',
-            isPublish: false,
-            isStart: true,
-            anwserCount: 2,
-            createTime: '2022-01-01',
-            isStar: true,
-        },
-    ]);
+    const { data = {}, loading } = useLoadingQuestionListData({ isStar: true });
+    const { list = [], total = 0 } = data;
     const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
     const deleteQuestion = () => {
@@ -80,11 +57,12 @@ export const Trash: FC = () => {
                     </Button>
                 </Space>
             </div>
+
             <Table
                 columns={columns}
-                dataSource={questionList}
+                dataSource={list}
                 pagination={false}
-                rowKey={(q) => q.id}
+                rowKey={(q: any) => q.id}
                 rowSelection={{
                     type: 'checkbox',
                     onChange: (selectedData) => {
@@ -105,8 +83,16 @@ export const Trash: FC = () => {
                 <div className={styles.right}>搜索</div>
             </div>
             <div className={styles.content}>
-                {questionList.length === 0 && <Empty description="暂无数据" />}
-                {questionList.length > 0 && TableElement}
+                {loading && (
+                    <div style={{ textAlign: 'center' }}>
+                        <Spin />
+                    </div>
+                )}
+                {!loading && list.length === 0 && <Empty description="暂无数据" />}
+                {list.length > 0 && TableElement}
+            </div>
+            <div className={styles.footer}>
+                <ListPage total={total} />
             </div>
         </>
     );
