@@ -1,16 +1,37 @@
 import { FC } from 'react';
-import { Button, Form, Input, Space, Typography } from 'antd';
+import { Button, Form, Input, message, Space, Typography } from 'antd';
 import { UserAddOutlined } from '@ant-design/icons';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { useRequest } from 'ahooks';
+
+import { registerUserService } from '../services/user';
 
 import styles from './Register.module.scss';
 
 const { Title } = Typography;
 
 export const Register: FC = () => {
+    const nav = useNavigate();
+
+    const { run: handleResiter } = useRequest(
+        async (values) => {
+            const { username, password } = values;
+            const data = await registerUserService(username, password);
+            return data;
+        },
+        {
+            manual: true,
+            onSuccess: () => {
+                message.success('注册成功');
+                nav('/login');
+            },
+        },
+    );
+
     function onFinish(values: any) {
-        console.log(values);
+        handleResiter(values);
     }
 
     return (

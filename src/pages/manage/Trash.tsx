@@ -1,9 +1,13 @@
 import { FC, useState } from 'react';
-import { Button, Empty, Modal, Space, Spin, Table, Typography } from 'antd';
+import { Button, Empty, message, Modal, Space, Spin, Table, Typography } from 'antd';
+
+import { useRequest } from 'ahooks';
 
 import { useLoadingQuestionListData } from '../../hooks/useLoadingQuestionListData';
 
 import { ListPage } from '../../components/ListPage';
+
+import { deleteQuestionService, updateQuestionService } from '../../services/question';
 
 import styles from './common.module.scss';
 
@@ -30,9 +34,48 @@ const columns = [
 ];
 
 export const Trash: FC = () => {
-    const { data = {}, loading } = useLoadingQuestionListData({ isStar: true });
+    const { data = {}, loading, refresh } = useLoadingQuestionListData({ isStar: true });
     const { list = [], total = 0 } = data;
     const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+
+    const { loading: recoverLoading, run: recover } = useRequest(
+        async () => {
+            if (selectedRowKeys.length === 0) {
+                return;
+            }
+            for await (const item of selectedRowKeys) {
+                await updateQuestionService(parseInt(item, 10), { isDeleted: false });
+            }
+        },
+        {
+            manual: true,
+            debounceWait: 1000,
+            onSuccess: () => {
+                message.success('回复成功');
+                refresh();
+                setSelectedRowKeys([]);
+            },
+        },
+    );
+
+    const { run: deletedQuestion } = useRequest(
+        async () => {
+            if (selectedRowKeys.length === 0) {
+                return;
+            }
+            for await (const item of selectedRowKeys) {
+                await deleteQuestionService(parseInt(item, 10));
+            }
+        },
+        {
+            manual: true,
+            onSuccess: () => {
+                message.success('删除成功');
+                refresh();
+                setSelectedRowKeys([]);
+            },
+        },
+    );
 
     const deleteQuestion = () => {
         confirm({
@@ -40,16 +83,18 @@ export const Trash: FC = () => {
             content: '确认删除选中的问题吗？删除后不可找回',
             okText: '确认',
             cancelText: '取消',
-            onOk: () => {
-                setSelectedRowKeys([]);
-            },
+            onOk: deletedQuestion,
         });
     };
     const TableElement = (
         <>
             <div style={{ marginBottom: '16px' }}>
                 <Space>
-                    <Button type="primary" disabled={selectedRowKeys.length === 0}>
+                    <Button
+                        type="primary"
+                        disabled={selectedRowKeys.length === 0 || recoverLoading}
+                        onClick={recover}
+                    >
                         恢复
                     </Button>
                     <Button danger disabled={selectedRowKeys.length === 0} onClick={deleteQuestion}>

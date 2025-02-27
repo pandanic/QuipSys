@@ -24,3 +24,21 @@ export async function getQuestionListService(
     const data = await axios.get('/api/question', { params });
     return data;
 }
+
+export async function updateQuestionService(
+    id: number,
+    opt: { [Key: string]: any },
+): Promise<ResDataType> {
+    const data = await axios.patch(`/api/question/${id}`, opt);
+    return data;
+}
+
+export async function duplicateQuestionService(id: number): Promise<ResDataType> {
+    const data = await axios.post(`/api/question/duplicate/${id}`, {});
+    return data;
+}
+
+export async function deleteQuestionService(id: number): Promise<ResDataType> {
+    const data = await axios.delete(`/api/question/${id}`, {});
+    return data;
+}

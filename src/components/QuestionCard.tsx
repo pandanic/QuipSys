@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 import { Button, Divider, message, Modal, Popconfirm, Space, Tag } from 'antd';
 
@@ -14,6 +14,10 @@ import {
 
 import { Link, useNavigate } from 'react-router-dom';
 
+import { useRequest } from 'ahooks';
+
+import { duplicateQuestionService, updateQuestionService } from '../services/question';
+
 import styles from './QuestionCard.module.scss';
 
 type QuestionCardProps = {
@@ -27,11 +31,51 @@ type QuestionCardProps = {
 
 export const QuestionCard: FC<QuestionCardProps> = (prop: QuestionCardProps) => {
     const { id, title, createTime, anwserCount, isPublish, isStar } = prop;
+    const [isStarState, setIsStarState] = useState(isStar);
+
+    const { loading: changeStarLoading, run: changeStar } = useRequest(
+        async () => {
+            await updateQuestionService(id, { isStar: !isStarState });
+        },
+        {
+            manual: true,
+            onSuccess: () => {
+                setIsStarState(!isStarState);
+                message.success('已更新');
+            },
+        },
+    );
     const nav = useNavigate();
     const { confirm } = Modal;
-    function duplicate() {
-        message.info('duplicate');
-    }
+
+    const { loading: duplicateLoading, run: duplicate } = useRequest(
+        async () => {
+            const data = await duplicateQuestionService(id);
+            return data;
+        },
+        {
+            manual: true,
+            onSuccess: (res: any) => {
+                message.success('复制成功');
+                nav(`/question/edit/${res.id}`);
+            },
+        },
+    );
+    const [isDeleted, setIsDeleted] = useState(false);
+    const { loading: deletedLoading, run: handleDeleted } = useRequest(
+        async () => {
+            const data = await updateQuestionService(id, { isDeleted: true });
+            return data;
+        },
+        {
+            manual: true,
+            onSuccess: () => {
+                message.info('删除成功');
+                setIsDeleted(true);
+            },
+        },
+    );
+
     function remove() {
         confirm({
             title: '确认删除该问卷?',
@@ -39,15 +83,10 @@ export const QuestionCard: FC<QuestionCardProps> = (prop: QuestionCardProps) => 
             okText: '确认',
             okType: 'danger',
             cancelText: '取消',
-            onOk() {
-                message.info('OK');
-            },
-            onCancel() {
-                message.info('Cancel');
-            },
+            onOk: handleDeleted,
         });
     }
-
+    if (isDeleted) return null;
     return (
         <div className={styles.container}>
             <div className={styles.title}>
@@ -96,8 +135,13 @@ export const QuestionCard: FC<QuestionCardProps> = (prop: QuestionCardProps) => 
                 </div>
                 <div className={styles.right}>
                     <Space>
-                        <Button icon={<StarOutlined />} type="text">
-                            {isStar ? '取消标星' : '标新'}
+                        <Button
+                            icon={<StarOutlined />}
+                            type="text"
+                            onClick={changeStar}
+                            disabled={changeStarLoading}
+                        >
+                            {isStarState ? '取消标星' : '标星'}
                         </Button>
                         <Popconfirm
                             title="是否确认复制该问卷?"
@@ -105,11 +149,15 @@ export const QuestionCard: FC<QuestionCardProps> = (prop: QuestionCardProps) => 
                             cancelText="取消"
                             onConfirm={duplicate}
                         >
-                            <Button icon={<CopyOutlined />} type="text">
+                            <Button icon={<CopyOutlined />} type="text" disabled={duplicateLoading}>
                                 复制
                             </Button>
                         </Popconfirm>
-                        <Button icon={<DeleteOutlined />} onClick={remove}>
+                        <Button
+                            icon={<DeleteOutlined />}
+                            onClick={remove}
+                            disabled={deletedLoading}
+                        >
                             删除
                         </Button>
                     </Space>
