@@ -9,10 +9,11 @@ function useGetComponentInfo() {
     ) as QuestionComponentStateType;
 
     const { componentList = [], selectedId } = components;
-
+    const selectComponent = componentList.find((c) => c.fe_id === selectedId);
     return {
         componentList,
         selectedId,
+        selectComponent,
     };
 }
 

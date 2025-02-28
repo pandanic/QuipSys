@@ -10,6 +10,7 @@ import styles from './index.module.scss';
 import EditCanvars from './EditCanvars';
 import { LeftPanel } from './LeftPanel';
 import { RightPanel } from './RightPanel';
+import EditHeader from './EditHeader';
 
 export const Edit: FC = () => {
     const dispatch = useDispatch();
@@ -20,7 +21,9 @@ export const Edit: FC = () => {
     const { loading } = useLoadingQuestionData();
     return (
         <div className={styles.container}>
-            <div>header</div>
+            <div>
+                <EditHeader />
+            </div>
             <div className={styles['content-warrper']}>
                 <div className={styles.conetent}>
                     <div className={styles.left}>

@@ -9,6 +9,7 @@ export type ComponentConfigType = {
     title: string;
     Component: FC<QuestionComponentType>;
     type: string;
+    PropComponent: FC<QuestionComponentType>;
     defaultProps: QuestionComponentType;
 };
 

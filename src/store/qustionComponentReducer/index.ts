@@ -3,6 +3,8 @@ import { produce } from 'immer';
 
 import { QuestionComponentType } from '../../components/QustionConponments';
 
+import { getNextSelectedId } from './utils';
+
 export type ComponentInfoType = {
     fe_id: string;
     type: string;
@@ -48,8 +50,36 @@ export const questionComponentSlice = createSlice({
                 draft.selectedId = newItem.fe_id;
             },
         ),
+        changeComponentProps: produce(
+            (
+                draft: QuestionComponentStateType,
+                action: PayloadAction<{ id: string; newProps: QuestionComponentType }>,
+            ) => {
+                const { id, newProps } = action.payload;
+                const component = draft.componentList.find((c) => c.fe_id === id);
+                if (component) {
+                    component.props = {
+                        ...component.props,
+                        ...newProps,
+                    };
+                }
+            },
+        ),
+        removeSelectedComponent: produce((draft: QuestionComponentStateType) => {
+            const { selectedId, componentList = [] } = draft;
+            const newSelectedId = getNextSelectedId(selectedId, componentList);
+            const index = componentList.findIndex((c) => c.fe_id === selectedId);
+            draft.selectedId = newSelectedId;
+            componentList.splice(index, 1);
+        }),
     },
 });
 
-export const { resetComponents, changeSelectedId, addComponent } = questionComponentSlice.actions;
+export const {
+    resetComponents,
+    changeSelectedId,
+    addComponent,
+    changeComponentProps,
+    removeSelectedComponent,
+} = questionComponentSlice.actions;
 export default questionComponentSlice.reducer;

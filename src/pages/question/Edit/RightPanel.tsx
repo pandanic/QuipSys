@@ -2,6 +2,8 @@ import { FileTextOutlined, SettingOutlined } from '@ant-design/icons';
 import { Tabs, TabsProps } from 'antd';
 import { FC } from 'react';
 
+import ComponentProps from './ComponentProps';
+
 export const RightPanel: FC = () => {
     const tabItems: TabsProps['items'] = [
         {
@@ -12,7 +14,7 @@ export const RightPanel: FC = () => {
                     属性
                 </span>
             ),
-            children: <div>属性</div>,
+            children: <ComponentProps />,
         },
         {
             key: 'layers',
