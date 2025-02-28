@@ -1,0 +1,25 @@
+.canvars {
+    min-height: 100%;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.component-warrper {
+    margin: 12px;
+    border: 1px solid #fff;
+    padding: 12px;
+    border-radius: 4px;
+
+    &:hover {
+        border-color: #d9d9d9;
+    }
+}
+
+.selected {
+    border-color: #40a9ff !important;
+
+
+}
+.component {
+    pointer-events: none;
+}

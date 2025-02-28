@@ -11,7 +11,6 @@ export const QuestionLayout: FC = () => {
     useNavPage(waitngUserData);
     return (
         <div>
-            <div>QuestionLayout</div>
             <div>
                 {waitngUserData ? (
                     <div style={{ textAlign: 'center', marginTop: '20%' }}>

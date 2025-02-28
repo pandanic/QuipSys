@@ -111,7 +111,6 @@ export const Trash: FC = () => {
                 rowSelection={{
                     type: 'checkbox',
                     onChange: (selectedData) => {
-                        console.log(selectedRowKeys);
                         setSelectedRowKeys(selectedData as string[]);
                     },
                 }}
