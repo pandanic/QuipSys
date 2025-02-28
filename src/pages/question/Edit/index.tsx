@@ -8,6 +8,8 @@ import { changeSelectedId } from '../../../store/qustionComponentReducer';
 
 import styles from './index.module.scss';
 import EditCanvars from './EditCanvars';
+import { LeftPanel } from './LeftPanel';
+import { RightPanel } from './RightPanel';
 
 export const Edit: FC = () => {
     const dispatch = useDispatch();
@@ -21,13 +23,17 @@ export const Edit: FC = () => {
             <div>header</div>
             <div className={styles['content-warrper']}>
                 <div className={styles.conetent}>
-                    <div className={styles.left}>left</div>
+                    <div className={styles.left}>
+                        <LeftPanel />
+                    </div>
                     <div className={styles.main} onClick={() => clearSelected()}>
                         <div className={styles['canvars-warrper']}>
                             <EditCanvars loading={loading} />
                         </div>
                     </div>
-                    <div className={styles.right}>right</div>
+                    <div className={styles.right}>
+                        <RightPanel />
+                    </div>
                 </div>
             </div>
         </div>

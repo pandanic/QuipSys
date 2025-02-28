@@ -35,8 +35,21 @@ export const questionComponentSlice = createSlice({
                 draft.selectedId = action.payload;
             },
         ),
+        addComponent: produce(
+            (draft: QuestionComponentStateType, action: PayloadAction<ComponentInfoType>) => {
+                const newItem: ComponentInfoType = action.payload;
+                const { selectedId, componentList } = draft;
+                const index = componentList.findIndex((c) => c.fe_id === selectedId);
+                if (index < 0) {
+                    draft.componentList.push(newItem);
+                } else {
+                    draft.componentList.splice(index + 1, 0, newItem);
+                }
+                draft.selectedId = newItem.fe_id;
+            },
+        ),
     },
 });
 
-export const { resetComponents, changeSelectedId } = questionComponentSlice.actions;
+export const { resetComponents, changeSelectedId, addComponent } = questionComponentSlice.actions;
 export default questionComponentSlice.reducer;

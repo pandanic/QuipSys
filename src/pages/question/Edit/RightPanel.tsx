@@ -1,30 +1,28 @@
-import { AppleOutlined, BarsOutlined } from '@ant-design/icons';
+import { FileTextOutlined, SettingOutlined } from '@ant-design/icons';
 import { Tabs, TabsProps } from 'antd';
 import { FC } from 'react';
 
-import { ComponentLib } from './ComponentLib';
-
-export const LeftPanel: FC = () => {
+export const RightPanel: FC = () => {
     const tabItems: TabsProps['items'] = [
         {
             key: 'componentLib',
             label: (
                 <span>
-                    <AppleOutlined />
-                    组件库
+                    <FileTextOutlined />
+                    属性
                 </span>
             ),
-            children: <ComponentLib />,
+            children: <div>属性</div>,
         },
         {
             key: 'layers',
             label: (
                 <span>
-                    <BarsOutlined />
-                    图层
+                    <SettingOutlined />
+                    页面设置
                 </span>
             ),
-            children: <div>图层</div>,
+            children: <div>页面设置</div>,
         },
     ];
     return (
