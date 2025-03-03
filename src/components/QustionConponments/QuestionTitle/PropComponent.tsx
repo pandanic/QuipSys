@@ -5,7 +5,7 @@ import { Checkbox, Form, Input, Select } from 'antd';
 import { QuestionTitlePropsType } from './interface';
 
 const PropComponent: FC<QuestionTitlePropsType> = (props: QuestionTitlePropsType) => {
-    const { text, level, isCenter, onChange } = props;
+    const { text, level, isCenter, onChange, disabled } = props;
     const [form] = Form.useForm();
     useEffect(() => {
         form.setFieldsValue({ text, level, isCenter });
@@ -18,6 +18,7 @@ const PropComponent: FC<QuestionTitlePropsType> = (props: QuestionTitlePropsType
     }
     return (
         <Form
+            disabled={disabled}
             layout="vertical"
             initialValues={{ text, level, isCenter }}
             form={form}

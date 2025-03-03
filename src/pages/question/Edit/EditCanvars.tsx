@@ -9,6 +9,8 @@ import useGetComponentInfo from '../../../hooks/useGetComponentInfo';
 import { ComponentInfoType, changeSelectedId } from '../../../store/qustionComponentReducer';
 import { getComponentConfig } from '../../../components/QustionConponments';
 
+import useBindCavarsKeyPress from '../../../hooks/useBindCavarsKeyPress';
+
 import styles from './EditCanvars.module.scss';
 
 type PropsType = {
@@ -33,6 +35,8 @@ const EditCanvars: FC<PropsType> = ({ loading }) => {
         event.stopPropagation();
         dispatch(changeSelectedId(id));
     }
+
+    useBindCavarsKeyPress();
     if (loading) {
         return (
             <div style={{ textAlign: 'center', marginTop: '124px' }}>
@@ -43,20 +47,28 @@ const EditCanvars: FC<PropsType> = ({ loading }) => {
 
     return (
         <div className={styles.canvars}>
-            {componentList.map((item) => {
-                const { fe_id: id } = item;
-                const warrperDefaultClassNames = styles['component-warrper'];
-                const selectedClassNames = styles.selected;
-                const warrperClassNames = classNames({
-                    [warrperDefaultClassNames]: true,
-                    [selectedClassNames]: id === selectedId,
-                });
-                return (
-                    <div key={id} className={warrperClassNames} onClick={(e) => handleClick(e, id)}>
-                        <div className={styles.component}>{genComponent(item)}</div>
-                    </div>
-                );
-            })}
+            {componentList
+                .filter((c) => !c.isHidden)
+                .map((item) => {
+                    const { fe_id: id, isLocked } = item;
+                    const warrperDefaultClassNames = styles['component-warrper'];
+                    const selectedClassNames = styles.selected;
+                    const lockedName = styles.locked;
+                    const warrperClassNames = classNames({
+                        [warrperDefaultClassNames]: true,
+                        [selectedClassNames]: id === selectedId,
+                        [lockedName]: isLocked,
+                    });
+                    return (
+                        <div
+                            key={id}
+                            className={warrperClassNames}
+                            onClick={(e) => handleClick(e, id)}
+                        >
+                            <div className={styles.component}>{genComponent(item)}</div>
+                        </div>
+                    );
+                })}
         </div>
     );
 };

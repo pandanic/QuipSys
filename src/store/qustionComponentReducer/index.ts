@@ -1,25 +1,31 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
 import { produce } from 'immer';
+
+import cloneDeep from 'lodash.clonedeep';
 
 import { QuestionComponentType } from '../../components/QustionConponments';
 
-import { getNextSelectedId } from './utils';
+import { getNextSelectedId, insertNewComponent } from './utils';
 
 export type ComponentInfoType = {
     fe_id: string;
     type: string;
     title: string;
+    isHidden?: boolean;
+    isLocked?: boolean;
     props: QuestionComponentType;
 };
 
 export type QuestionComponentStateType = {
     selectedId: string;
     componentList: Array<ComponentInfoType>;
+    copiedComponent?: ComponentInfoType | null;
 };
 
 const INIT_STATE: QuestionComponentStateType = {
     selectedId: '',
     componentList: [],
+    copiedComponent: null,
 };
 
 export const questionComponentSlice = createSlice({
@@ -40,14 +46,7 @@ export const questionComponentSlice = createSlice({
         addComponent: produce(
             (draft: QuestionComponentStateType, action: PayloadAction<ComponentInfoType>) => {
                 const newItem: ComponentInfoType = action.payload;
-                const { selectedId, componentList } = draft;
-                const index = componentList.findIndex((c) => c.fe_id === selectedId);
-                if (index < 0) {
-                    draft.componentList.push(newItem);
-                } else {
-                    draft.componentList.splice(index + 1, 0, newItem);
-                }
-                draft.selectedId = newItem.fe_id;
+                insertNewComponent(draft, newItem);
             },
         ),
         changeComponentProps: produce(
@@ -72,6 +71,65 @@ export const questionComponentSlice = createSlice({
             draft.selectedId = newSelectedId;
             componentList.splice(index, 1);
         }),
+        hiddenSelectComponent: produce(
+            (
+                draft: QuestionComponentStateType,
+                action: PayloadAction<{ fe_id: string; isHidden: boolean }>,
+            ) => {
+                const { fe_id: id, isHidden } = action.payload;
+                const component = draft.componentList.find((c) => c.fe_id === id);
+                let newSelectedId = '';
+                if (isHidden) {
+                    newSelectedId = getNextSelectedId(id, draft.componentList);
+                } else {
+                    newSelectedId = id;
+                }
+
+                draft.selectedId = newSelectedId;
+                if (component) {
+                    component.isHidden = isHidden;
+                }
+            },
+        ),
+        toggleComponentLock: produce(
+            (draft: QuestionComponentStateType, action: PayloadAction<{ fe_id: string }>) => {
+                const { fe_id: id } = action.payload;
+                const traget = draft.componentList.find((c) => c.fe_id === id);
+                if (traget) {
+                    traget.isLocked = !traget.isLocked;
+                }
+            },
+        ),
+        copyComponent: produce((draft: QuestionComponentStateType) => {
+            const { selectedId, componentList = [] } = draft;
+            const index = componentList.findIndex((c) => c.fe_id === selectedId);
+            if (index < 0) return;
+            const component = componentList[index];
+            draft.copiedComponent = cloneDeep(component);
+        }),
+
+        pastedComponent: produce((draft: QuestionComponentStateType) => {
+            const { copiedComponent } = draft;
+            if (!copiedComponent) return;
+            copiedComponent.fe_id = nanoid();
+            insertNewComponent(draft, copiedComponent);
+        }),
+
+        selectPrevComponent: produce((draft: QuestionComponentStateType) => {
+            const { selectedId, componentList = [] } = draft;
+            const index = componentList.findIndex((c) => c.fe_id === selectedId);
+            if (index <= 0) return;
+            const prevComponent = componentList[index - 1];
+            draft.selectedId = prevComponent.fe_id;
+        }),
+
+        selectNextComponent: produce((draft: QuestionComponentStateType) => {
+            const { selectedId, componentList = [] } = draft;
+            const index = componentList.findIndex((c) => c.fe_id === selectedId);
+            if (index < 0 || index >= componentList.length - 1) return;
+            const nextComponent = componentList[index + 1];
+            draft.selectedId = nextComponent.fe_id;
+        }),
     },
 });
 
@@ -81,5 +139,11 @@ export const {
     addComponent,
     changeComponentProps,
     removeSelectedComponent,
+    hiddenSelectComponent,
+    toggleComponentLock,
+    copyComponent,
+    pastedComponent,
+    selectPrevComponent,
+    selectNextComponent,
 } = questionComponentSlice.actions;
 export default questionComponentSlice.reducer;

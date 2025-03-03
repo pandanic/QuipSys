@@ -27,7 +27,9 @@ export const Edit: FC = () => {
             <div className={styles['content-warrper']}>
                 <div className={styles.conetent}>
                     <div className={styles.left}>
-                        <LeftPanel />
+                        <div className={styles['left-warrper']}>
+                            <LeftPanel />
+                        </div>
                     </div>
                     <div className={styles.main} onClick={() => clearSelected()}>
                         <div className={styles['canvars-warrper']}>

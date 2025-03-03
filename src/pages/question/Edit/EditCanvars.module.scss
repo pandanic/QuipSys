@@ -20,6 +20,12 @@
 
 
 }
+
 .component {
     pointer-events: none;
+}
+
+.locked {
+    opacity: .5;
+    cursor: not-allowed;
 }

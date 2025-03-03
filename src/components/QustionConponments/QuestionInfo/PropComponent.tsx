@@ -2,26 +2,26 @@ import { FC, useEffect } from 'react';
 
 import { Form, Input } from 'antd';
 
-import { QuestionInputPropsType } from './interface';
+import { QuestionInfoPropsType } from './interface';
 
-const PropComponent: FC<QuestionInputPropsType> = (props: QuestionInputPropsType) => {
-    const { title, placeholder, onChange, disabled } = props;
+const PropComponent: FC<QuestionInfoPropsType> = (props: QuestionInfoPropsType) => {
+    const { title, desc, onChange, disabled } = props;
     const [form] = Form.useForm();
 
+    useEffect(() => {
+        form.setFieldsValue({ title, desc });
+    }, [title, desc]);
     function handleValueChange() {
         if (onChange) {
             onChange(form.getFieldsValue());
         }
     }
-    useEffect(() => {
-        form.setFieldsValue({ title, placeholder });
-    }, [title, placeholder]);
     return (
         <Form
-            disabled={disabled}
-            layout="vertical"
-            initialValues={{ title, placeholder }}
             form={form}
+            layout="vertical"
+            initialValues={{ title, desc }}
+            disabled={disabled}
             onValuesChange={handleValueChange}
         >
             <Form.Item
@@ -31,11 +31,10 @@ const PropComponent: FC<QuestionInputPropsType> = (props: QuestionInputPropsType
             >
                 <Input />
             </Form.Item>
-            <Form.Item name="placeholder" label="placeholder">
-                <Input />
+            <Form.Item name="desc" label="段落文本">
+                <Input.TextArea />
             </Form.Item>
         </Form>
     );
 };
-
 export default PropComponent;

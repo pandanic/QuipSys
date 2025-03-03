@@ -1,18 +1,30 @@
-import { ComponentInfoType } from '.';
+import { ComponentInfoType, QuestionComponentStateType } from '.';
 
 export function getNextSelectedId(id: string, componentList: ComponentInfoType[]) {
-    const index = componentList.findIndex((c) => c.fe_id === id);
+    const visableList = componentList.filter((c) => !c.isHidden);
+    const index = visableList.findIndex((c) => c.fe_id === id);
     if (index < 0) return '';
     let newSelectedId = '';
-    const { length } = componentList;
-    if (length < 1) {
+    const { length } = visableList;
+    if (length <= 1) {
         newSelectedId = '';
     } else {
         if (index + 1 === length) {
-            newSelectedId = componentList[index - 1].fe_id;
+            newSelectedId = visableList[index - 1].fe_id;
         } else {
-            newSelectedId = componentList[index + 1].fe_id;
+            newSelectedId = visableList[index + 1].fe_id;
         }
     }
     return newSelectedId;
+}
+
+export function insertNewComponent(draft: QuestionComponentStateType, newComp: ComponentInfoType) {
+    const { selectedId, componentList } = draft;
+    const index = componentList.findIndex((c) => c.fe_id === selectedId);
+    if (index < 0) {
+        draft.componentList.push(newComp);
+    } else {
+        draft.componentList.splice(index + 1, 0, newComp);
+    }
+    draft.selectedId = newComp.fe_id;
 }

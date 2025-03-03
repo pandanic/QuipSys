@@ -18,7 +18,7 @@ const ComponentProps: FC = () => {
         return <NoPage />;
     }
 
-    const { type, props } = selectComponent;
+    const { type, props, isLocked, isHidden } = selectComponent;
     const componentConfig = getComponentConfig(type);
     if (!componentConfig) {
         return <NoPage />;
@@ -32,6 +32,6 @@ const ComponentProps: FC = () => {
 
     const { PropComponent } = componentConfig;
 
-    return <PropComponent {...props} onChange={changeProps} />;
+    return <PropComponent {...props} onChange={changeProps} disabled={isLocked || isHidden} />;
 };
 export default ComponentProps;
