@@ -3,6 +3,7 @@ import { Tabs, TabsProps } from 'antd';
 import { FC } from 'react';
 
 import { ComponentLib } from './ComponentLib';
+import Layers from './Layers';
 
 export const LeftPanel: FC = () => {
     const tabItems: TabsProps['items'] = [
@@ -24,7 +25,11 @@ export const LeftPanel: FC = () => {
                     图层
                 </span>
             ),
-            children: <div>图层</div>,
+            children: (
+                <div>
+                    <Layers />
+                </div>
+            ),
         },
     ];
     return (

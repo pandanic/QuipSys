@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 
 import { getQuestionService } from '../services/question';
 import { resetComponents } from '../store/qustionComponentReducer';
+import { restPageInfo } from '../store/pageInfoReducer';
 
 export const useLoadingQuestionData = () => {
     const { id = '' } = useParams();
@@ -25,12 +26,13 @@ export const useLoadingQuestionData = () => {
     useEffect(() => {
         if (!data) return;
         // eslint-disable-next-line unused-imports/no-unused-vars
-        const { title = '', componentList = [] } = data;
+        const { title = '', desc = '', js = '', css = '', componentList = [] } = data;
         let selectedId = '';
         if (componentList.length > 0) {
             selectedId = componentList[0].fe_id;
         }
         dispatch(resetComponents({ componentList, selectedId, copiedComponent: null }));
+        dispatch(restPageInfo({ title, desc, js, css }));
     }, [data]);
 
     useEffect(() => {

@@ -130,6 +130,19 @@ export const questionComponentSlice = createSlice({
             const nextComponent = componentList[index + 1];
             draft.selectedId = nextComponent.fe_id;
         }),
+        changeComponentTitle: produce(
+            (
+                draft: QuestionComponentStateType,
+                action: PayloadAction<{ id: string; title: string }>,
+            ) => {
+                const { componentList = [] } = draft;
+                const { id, title } = action.payload;
+                const currComp = componentList.find((c) => c.fe_id === id);
+                if (currComp) {
+                    currComp.title = title;
+                }
+            },
+        ),
     },
 });
 
@@ -145,5 +158,6 @@ export const {
     pastedComponent,
     selectPrevComponent,
     selectNextComponent,
+    changeComponentTitle,
 } = questionComponentSlice.actions;
 export default questionComponentSlice.reducer;
