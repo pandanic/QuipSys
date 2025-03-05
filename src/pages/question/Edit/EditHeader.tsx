@@ -1,13 +1,13 @@
 import { ChangeEvent, FC, useState } from 'react';
 
-import { Button, Input, Space, Typography } from 'antd';
+import { Button, Input, message, Space, Typography } from 'antd';
 import { EditOutlined, LeftOutlined, LoadingOutlined } from '@ant-design/icons';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDispatch } from 'react-redux';
 
-import { useKeyPress, useRequest } from 'ahooks';
+import { useDebounceEffect, useKeyPress, useRequest } from 'ahooks';
 
 import useGetPageInfo from '../../../hooks/useGetPageInfo';
 
@@ -27,6 +27,13 @@ const SaveButton: FC = () => {
     const { componentList } = useGetComponentInfo();
     const pageInfo = useGetPageInfo();
 
+    useDebounceEffect(
+        () => {
+            save();
+        },
+        [componentList, pageInfo],
+        { wait: 2000 },
+    );
     useKeyPress(['ctrl.s', 'meta.s'], (event: KeyboardEvent) => {
         event.preventDefault();
         if (!loading) save();
@@ -76,6 +83,34 @@ const TitleElem: FC = () => {
     );
 };
 
+const PublishElem: FC = () => {
+    const nav = useNavigate();
+    const { id } = useParams();
+    const { componentList } = useGetComponentInfo();
+    const pageInfo = useGetPageInfo();
+    const { loading, run: pub } = useRequest(
+        async () => {
+            if (!id) return;
+            await updateQuestionService(parseInt(id, 10), {
+                ...pageInfo,
+                componentList,
+                isPublish: true,
+            });
+        },
+        {
+            manual: true,
+            onSuccess: () => {
+                message.success('发布成功');
+                nav(`/question/stat/${id}`);
+            },
+        },
+    );
+    return (
+        <Button onClick={pub} loading={loading} type="primary">
+            发布
+        </Button>
+    );
+};
 const EditHeader: FC = () => {
     const nav = useNavigate();
 
@@ -96,7 +131,7 @@ const EditHeader: FC = () => {
                 <div className={styles.right}>
                     <Space>
                         <SaveButton />
-                        <Button type="primary">发布</Button>
+                        <PublishElem />
                     </Space>
                 </div>
             </div>

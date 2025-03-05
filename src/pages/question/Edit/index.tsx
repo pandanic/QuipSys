@@ -2,9 +2,13 @@ import { FC } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useTitle } from 'ahooks';
+
 import { useLoadingQuestionData } from '../../../hooks/useLoadingQuestionData';
 
 import { changeSelectedId } from '../../../store/qustionComponentReducer';
+
+import useGetPageInfo from '../../../hooks/useGetPageInfo';
 
 import styles from './index.module.scss';
 import EditCanvars from './EditCanvars';
@@ -14,6 +18,8 @@ import EditHeader from './EditHeader';
 
 export const Edit: FC = () => {
     const dispatch = useDispatch();
+    const { title } = useGetPageInfo();
+    useTitle(`问卷编辑--${title}`);
     function clearSelected() {
         dispatch(changeSelectedId(''));
     }

@@ -26,13 +26,13 @@ export const useLoadingQuestionData = () => {
     useEffect(() => {
         if (!data) return;
         // eslint-disable-next-line unused-imports/no-unused-vars
-        const { title = '', desc = '', js = '', css = '', componentList = [] } = data;
+        const { title = '', desc = '', js = '', css = '', componentList = [], isPublish } = data;
         let selectedId = '';
         if (componentList.length > 0) {
             selectedId = componentList[0].fe_id;
         }
         dispatch(resetComponents({ componentList, selectedId, copiedComponent: null }));
-        dispatch(restPageInfo({ title, desc, js, css }));
+        dispatch(restPageInfo({ title, desc, js, css, isPublish }));
     }, [data]);
 
     useEffect(() => {

@@ -5,7 +5,7 @@ import { QuestionComponentStateType } from '../store/qustionComponentReducer';
 
 function useGetComponentInfo() {
     const components = useSelector<StateType>(
-        (state) => state.questionComponents,
+        (state) => state.questionComponents.present,
     ) as QuestionComponentStateType;
 
     const { componentList = [], selectedId, copiedComponent = null } = components;

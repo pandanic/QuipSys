@@ -1,6 +1,8 @@
 import { useKeyPress } from 'ahooks';
 import { useDispatch } from 'react-redux';
 
+import { ActionCreators } from 'redux-undo';
+
 import {
     copyComponent,
     pastedComponent,
@@ -15,7 +17,7 @@ function useBindCavarsKeyPress() {
     function isActiveElementValid() {
         const { activeElement } = document;
         if (activeElement === document.body) return true;
-
+        if (activeElement?.matches('div[role="button"]')) return true;
         return false;
     }
 
@@ -36,11 +38,7 @@ function useBindCavarsKeyPress() {
             dispatch(pastedComponent());
         }
     });
-    useKeyPress(['ctrl.v', 'meta.v'], () => {
-        if (isActiveElementValid()) {
-            dispatch(pastedComponent());
-        }
-    });
+
     useKeyPress(['uparrow'], () => {
         if (isActiveElementValid()) {
             dispatch(selectPrevComponent());
@@ -51,6 +49,25 @@ function useBindCavarsKeyPress() {
             dispatch(selectNextComponent());
         }
     });
+
+    useKeyPress(
+        ['ctrl.z', 'meta.z'],
+        () => {
+            if (isActiveElementValid()) {
+                dispatch(ActionCreators.undo());
+            }
+        },
+        { exactMatch: true },
+    );
+    useKeyPress(
+        ['ctrl.shift.z', 'meta.shift.z'],
+        () => {
+            if (isActiveElementValid()) {
+                dispatch(ActionCreators.redo());
+            }
+        },
+        { exactMatch: true },
+    );
 }
 
 export default useBindCavarsKeyPress;
